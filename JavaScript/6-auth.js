@@ -19,7 +19,7 @@ server.on('connection', (client) => {
     const headers = parseHeader(data.toString());
     const { host, method, proxyAuthorization } = headers;
 
-    if (!proxyAuthorization || proxyAuthorization !== authToken) {
+    if (proxyAuthorization !== authToken) {
       const msg = 'HTTP/1.1 407 Proxy Authentication Required' + EOL +
       'Proxy-Authenticate: Basic realm="Proxy Authentication Required"' + EOL +
       'Content-Length: 0' + EOL + EOL;
