@@ -5,7 +5,7 @@ const fs = require('node:fs');
 const { parseHeaders } = require('./utils.js');
 
 const PORT = 8000;
-const DEFAULT_TLS_PORT = '443';
+const DEFAULT_TLS_PORT = 443;
 
 const options = {
   key: fs.readFileSync('./cert/key.pem'),
@@ -20,8 +20,8 @@ server.on('secureConnection', (socket) => {
 
   socket.on('data', (data) => {
     console.log(`${data}`);
-    const { host, port = DEFAULT_TLS_PORT } = parseHeaders(data);
-    const targetPort = parseInt(port, 10);
+    const { host, port } = parseHeaders(data);
+    const targetPort = parseInt(port, 10) || DEFAULT_TLS_PORT;
     const proxy = new tls.TLSSocket();
     proxy.connect(targetPort, host, () => {
       proxy.write(data);
