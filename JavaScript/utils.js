@@ -1,7 +1,7 @@
 'use strict';
 
 
-const EOL = '\r\n';
+const CRLF = '\r\n';
 
 const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
@@ -14,12 +14,12 @@ const spinalToCamel = (s) => {
 };
 
 const parseHeaders = (buffer) => {
-  const [headers] = buffer.toString().split(EOL + EOL);
+  const [headers] = buffer.toString().split(CRLF + CRLF);
   const lines = headers.split('\n');
   const [method] = lines.shift().split(' ');
   const result = lines.reduce((headers, line) => {
     const [key, value = ''] = line.split(': ');
-    const header = key.includes('-') ? spinalToCamel(key) : toLower(key);
+    const header = (key.includes('-') ? spinalToCamel : toLower)(key);
     headers[header] = value.trim();
     return headers;
   }, { method });

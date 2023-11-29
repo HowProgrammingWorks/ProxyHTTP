@@ -3,7 +3,7 @@
 const net = require('node:net');
 const { parseHeaders } = require('./utils.js');
 
-const EOL = '\r\n';
+const CRLF = '\r\n';
 const PORT = 8000;
 const DEFAULT_HTTP_PORT = 80;
 
@@ -20,7 +20,7 @@ server.on('connection', (socket) => {
     const targetPort = parseInt(port, 10) || DEFAULT_HTTP_PORT;
     const proxy = net.createConnection(targetPort, hostname, () => {
       const isHttps = method === 'CONNECT';
-      if (isHttps) socket.write('HTTP/1.1 200 OK' + EOL + EOL);
+      if (isHttps) socket.write('HTTP/1.1 200 OK' + CRLF + CRLF);
       else proxy.write(data);
       socket.pipe(proxy).pipe(socket);
     });
