@@ -8,30 +8,30 @@ const PROXY_HOST = 'localhost';
 
 const server = net.createServer();
 
-server.on('connection', (client) => {
-  const { remoteAddress } = client;
+server.on('connection', (socket) => {
+  const { remoteAddress } = socket;
   console.log('Client connected:', remoteAddress);
 
-  client.once('data', (data) => {
+  socket.once('data', (data) => {
     const proxy = new net.Socket();
 
     proxy.connect(PROXY_PORT, PROXY_HOST, () => {
       proxy.write(data);
-      proxy.pipe(client);
-      client.pipe(proxy);
+      proxy.pipe(socket);
+      socket.pipe(proxy);
     });
 
     proxy.on('error', (err) => {
       console.error('Proxy connection error:', err.message);
-      client.end();
+      socket.end();
     });
   });
 
-  client.on('end', () => {
+  socket.on('end', () => {
     console.log('Client disconnected:', remoteAddress);
   });
 
-  client.on('error', (err) => {
+  socket.on('error', (err) => {
     console.error('Client connection error:', err.message);
   });
 });

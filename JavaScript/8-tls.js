@@ -11,19 +11,19 @@ const server = tls.createServer({
   cert: fs.readFileSync('./cert/cert.pem'),
 });
 
-server.on('secureConnection', (client) => {
-  const { remoteAddress } = client;
+server.on('secureConnection', (socket) => {
+  const { remoteAddress } = socket;
   console.log('Client connected:', remoteAddress + '\n');
 
   const proxy = new tls.TLSSocket();
 
-  client.on('data', (data) => {
+  socket.on('data', (data) => {
     console.log(`${data}`);
     const { host } = parseHeader(data.toString());
     proxy.connect(443, host, () => {
       proxy.write(data);
-      proxy.pipe(client);
-      client.pipe(proxy);
+      proxy.pipe(socket);
+      socket.pipe(proxy);
     });
   });
 });
