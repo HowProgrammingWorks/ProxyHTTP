@@ -6,9 +6,13 @@ const { parseHeaders } = require('./utils.js');
 const CRLF = '\r\n';
 const PORT = 8000;
 const DEFAULT_HTTP_PORT = 80;
-
-const credentials = 'marcus:marcus';
-const authToken = `Basic ${btoa(credentials)}`;
+const HEADERS = [
+  'HTTP/1.1 407 Proxy Authentication Required',
+  'Proxy-Authenticate: Basic realm="Proxy Authentication Required"',
+  'Content-Length: 0'
+].join(CRLF) + CRLF + CRLF;
+const CREDENTIALS = 'marcus:marcus';
+const AUTH_TOKEN = `Basic ${btoa(CREDENTIALS)}`;
 
 const server = net.createServer();
 
@@ -20,12 +24,7 @@ server.on('connection', (socket) => {
     const headers = parseHeaders(data);
     const { host, method, proxyAuthorization } = headers;
 
-    if (proxyAuthorization !== authToken) {
-      const HEADERS = [
-        'HTTP/1.1 407 Proxy Authentication Required',
-        'Proxy-Authenticate: Basic realm="Proxy Authentication Required"',
-        'Content-Length: 0'
-      ].join(CRLF) + CRLF + CRLF;
+    if (proxyAuthorization !== AUTH_TOKEN) {
       socket.write(HEADERS);
       return void socket.end();
     }
