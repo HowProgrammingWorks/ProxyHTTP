@@ -11,11 +11,11 @@ const authToken = `Basic ${btoa(credentials)}`;
 
 const server = net.createServer();
 
-server.on('connection', (client) => {
-  const { remoteAddress } = client;
+server.on('connection', (socket) => {
+  const { remoteAddress } = socket;
   console.log('Client connected:', remoteAddress);
 
-  client.once('data', (data) => {
+  socket.once('data', (data) => {
     const headers = parseHeader(data.toString());
     const { host, method, proxyAuthorization } = headers;
 
@@ -23,31 +23,31 @@ server.on('connection', (client) => {
       const msg = 'HTTP/1.1 407 Proxy Authentication Required' + EOL +
       'Proxy-Authenticate: Basic realm="Proxy Authentication Required"' + EOL +
       'Content-Length: 0' + EOL + EOL;
-      client.write(msg);
-      return void client.end();
+      socket.write(msg);
+      return void socket.end();
     }
 
     const { hostname, port } = new URL(`http://${host}`);
 
     const proxy = net.createConnection(port || '80', hostname, () => {
       const isHttps = method === 'CONNECT';
-      if (isHttps) client.write('HTTP/1.1 200 OK' + EOL + EOL);
+      if (isHttps) socket.write('HTTP/1.1 200 OK' + EOL + EOL);
       else proxy.write(data);
-      proxy.pipe(client);
-      client.pipe(proxy);
+      proxy.pipe(socket);
+      socket.pipe(proxy);
     });
 
     proxy.on('error', (err) => {
       console.error('Proxy connection error:', err.message);
-      client.end();
+      socket.end();
     });
   });
 
-  client.on('end', () => {
+  socket.on('end', () => {
     console.log('Client disconnected:', remoteAddress);
   });
 
-  client.on('error', (err) => {
+  socket.on('error', (err) => {
     console.error('Client connection error:', err.message);
   });
 });
