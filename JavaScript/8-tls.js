@@ -2,7 +2,7 @@
 
 const tls = require('node:tls');
 const fs = require('node:fs');
-const { parseHeader } = require('./utils.js');
+const { parseHeaders } = require('./utils.js');
 
 const PORT = 8000;
 const DEFAULT_TLS_PORT = '443';
@@ -20,7 +20,7 @@ server.on('secureConnection', (socket) => {
 
   socket.on('data', (data) => {
     console.log(`${data}`);
-    const { host, port = DEFAULT_TLS_PORT } = parseHeader(data.toString());
+    const { host, port = DEFAULT_TLS_PORT } = parseHeaders(data);
     const targetPort = parseInt(port, 10);
     const proxy = new tls.TLSSocket();
     proxy.connect(targetPort, host, () => {

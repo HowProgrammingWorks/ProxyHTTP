@@ -1,7 +1,7 @@
 'use strict';
 
 const net = require('node:net');
-const { parseHeader } = require('./utils.js');
+const { parseHeaders } = require('./utils.js');
 
 const EOL = '\r\n';
 const PORT = 8000;
@@ -14,7 +14,7 @@ server.on('connection', (socket) => {
 
   socket.once('data', (data) => {
     console.log(`${data}`);
-    const { method, host } = parseHeader(data.toString());
+    const { method, host } = parseHeaders(data);
     const { hostname, port = '80' } = new URL(`http://${host}`);
     const targetPort = parseInt(port, 10) || 80;
     const proxy = net.createConnection(targetPort, hostname, () => {

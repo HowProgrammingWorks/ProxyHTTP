@@ -1,7 +1,7 @@
 'use strict';
 
 const net = require('node:net');
-const { parseHeader } = require('./utils.js');
+const { parseHeaders } = require('./utils.js');
 
 const EOL = '\r\n';
 const PORT = 8000;
@@ -16,7 +16,7 @@ server.on('connection', (socket) => {
   console.log('Client connected:', remoteAddress);
 
   socket.once('data', (data) => {
-    const headers = parseHeader(data.toString());
+    const headers = parseHeaders(data);
     const { host, method, proxyAuthorization } = headers;
 
     if (proxyAuthorization !== authToken) {

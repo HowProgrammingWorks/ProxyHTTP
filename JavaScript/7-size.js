@@ -2,7 +2,7 @@
 
 const net = require('node:net');
 const stream  = require('node:stream');
-const { parseHeader } = require('./utils.js');
+const { parseHeaders } = require('./utils.js');
 
 const EOL = '\r\n';
 const PORT = 8000;
@@ -15,7 +15,7 @@ server.on('connection', (socket) => {
 
   let size = 0;
   socket.once('data', (data) => {
-    const { method, host } = parseHeader(data.toString());
+    const { method, host } = parseHeaders(data.toString());
     const { hostname, port = '80' } = new URL(`http://${host}`);
     const targetPort = parseInt(port, 10);
     const proxy = net.createConnection(targetPort, hostname, () => {
