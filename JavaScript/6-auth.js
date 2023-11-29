@@ -3,7 +3,7 @@
 const net = require('node:net');
 const { parseHeaders } = require('./utils.js');
 
-const EOL = '\r\n';
+const CRLF = '\r\n';
 const PORT = 8000;
 const DEFAULT_HTTP_PORT = 80;
 
@@ -21,10 +21,12 @@ server.on('connection', (socket) => {
     const { host, method, proxyAuthorization } = headers;
 
     if (proxyAuthorization !== authToken) {
-      const msg = 'HTTP/1.1 407 Proxy Authentication Required' + EOL +
-      'Proxy-Authenticate: Basic realm="Proxy Authentication Required"' + EOL +
-      'Content-Length: 0' + EOL + EOL;
-      socket.write(msg);
+      const HEADERS = [
+        'HTTP/1.1 407 Proxy Authentication Required',
+        'Proxy-Authenticate: Basic realm="Proxy Authentication Required"'
+        'Content-Length: 0'
+      ].join(CRLF) + CRLF + CRLF;
+      socket.write(HEADERS);
       return void socket.end();
     }
 
@@ -32,7 +34,7 @@ server.on('connection', (socket) => {
     const targetPort = parseInt(port, 10) || DEFAULT_HTTP_PORT;
     const proxy = net.createConnection(targetPort, hostname, () => {
       const isHttps = method === 'CONNECT';
-      if (isHttps) socket.write('HTTP/1.1 200 OK' + EOL + EOL);
+      if (isHttps) socket.write('HTTP/1.1 200 OK' + CRLF + CRLF);
       else proxy.write(data);
       socket.pipe(proxy).pipe(socket);
     });
