@@ -23,7 +23,7 @@ server.on('connection', (socket) => {
     if (proxyAuthorization !== authToken) {
       const HEADERS = [
         'HTTP/1.1 407 Proxy Authentication Required',
-        'Proxy-Authenticate: Basic realm="Proxy Authentication Required"'
+        'Proxy-Authenticate: Basic realm="Proxy Authentication Required"',
         'Content-Length: 0'
       ].join(CRLF) + CRLF + CRLF;
       socket.write(HEADERS);
