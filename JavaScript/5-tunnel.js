@@ -1,14 +1,10 @@
 'use strict';
 
 const net = require('node:net');
-const { spawn } = require('node:child_process');
 
 const PORT = 8080;
 const PROXY_PORT = 8000;
 const PROXY_HOST = 'localhost';
-
-const filename = '4-net.js';
-spawn('node', [filename]);
 
 const server = net.createServer();
 
