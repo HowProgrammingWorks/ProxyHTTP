@@ -14,7 +14,7 @@ http.createServer(async (req, res) => {
   const { headers, url, method } = req;
   const { pathname, hostname } = new URL(url);
   const options = { hostname, path: pathname, method, headers };
-  const request = http.request(options, (result) => void result.pipe(res));
+  const request = http.request(options, (response) => void response.pipe(res));
   if (method === 'POST') {
     const body = await receiveBody(req);
     request.write(body);
