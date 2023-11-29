@@ -17,8 +17,7 @@ server.on('connection', (socket) => {
 
     proxy.connect(PROXY_PORT, PROXY_HOST, () => {
       proxy.write(data);
-      proxy.pipe(socket);
-      socket.pipe(proxy);
+      socket.pipe(proxy).pipe(socket);
     });
 
     proxy.on('error', (err) => {

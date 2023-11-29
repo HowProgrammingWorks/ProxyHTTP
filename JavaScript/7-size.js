@@ -13,6 +13,7 @@ server.on('connection', (socket) => {
   const { remoteAddress } = socket;
   console.log('Client connected:', remoteAddress + '\n');
 
+  let size = 0;
   socket.once('data', (data) => {
     const { method, host } = parseHeader(data.toString());
     const { hostname, port } = new URL(`http://${host}`);
@@ -21,7 +22,6 @@ server.on('connection', (socket) => {
       const isHttps = method === 'CONNECT';
       if (isHttps) socket.write('HTTP/1.1 200 OK' + EOL + EOL);
       else proxy.write(data);
-      let size = 0;
       const options = {
         transform(chunk, encoding, next) {
           size += chunk.length;
@@ -30,9 +30,7 @@ server.on('connection', (socket) => {
         }
       };
       const sizeStream = new stream.Transform(options);
-      proxy.pipe(sizeStream).pipe(socket);
-      socket.pipe(proxy);
-      proxy.on('close', () => void console.log(`Client used "${size}" bytes`));
+      socket.pipe(proxy).pipe(sizeStream).pipe(socket);
     });
 
     proxy.on('error', (err) => {
@@ -42,7 +40,7 @@ server.on('connection', (socket) => {
   });
 
   socket.on('end', () => {
-    console.log('Client disconnected:', remoteAddress);
+    console.log('Client disconnected:', remoteAddress, `Used ${size} bytes`);
   });
 
   socket.on('error', (err) => {
