@@ -22,8 +22,7 @@ server.on('secureConnection', (socket) => {
     const { host } = parseHeader(data.toString());
     proxy.connect(443, host, () => {
       proxy.write(data);
-      proxy.pipe(socket);
-      socket.pipe(proxy);
+      socket.pipe(proxy).pipe(socket);
     });
   });
 });

@@ -15,8 +15,7 @@ server.on('connect', (req, socket, head) => {
   const { port, hostname } = new URL(`http://${req.url}`);
   const proxy = net.connect(port, hostname, () => {
     if (head) proxy.write(head);
-    proxy.pipe(socket);
-    socket.pipe(proxy);
+    socket.pipe(proxy).pipe(socket);
   });
 });
 

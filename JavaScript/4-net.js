@@ -21,8 +21,7 @@ server.on('connection', (socket) => {
       const isHttps = method === 'CONNECT';
       if (isHttps) socket.write('HTTP/1.1 200 OK' + EOL + EOL);
       else proxy.write(data);
-      proxy.pipe(socket);
-      socket.pipe(proxy);
+      socket.pipe(proxy).pipe(socket);
     });
 
     proxy.on('error', (err) => {
