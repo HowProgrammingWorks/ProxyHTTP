@@ -1,5 +1,8 @@
 'use strict';
 
+
+const EOL = '\r\n';
+
 const toUpperCamel = (s) => s.charAt(0).toUpperCase() + s.slice(1);
 
 const toLower = (s) => s.toLowerCase();
@@ -10,16 +13,17 @@ const spinalToCamel = (s) => {
   return first + words.map(toLower).map(toUpperCamel).join('');
 };
 
-const parseHeader = (header) => {
-  const lines = header.split('\n').filter((l) => l !== '\r');
+const parseHeaders = (buffer) => {
+  const [headers] = buffer.toString().split(EOL + EOL);
+  const lines = headers.split('\n');
   const [method] = lines.shift().split(' ');
-  const body = lines.pop();
-  const result = lines.reduce((obj, line) => {
+  const result = lines.reduce((headers, line) => {
     const [key, value = ''] = line.split(': ');
-    obj[key.includes('-') ? spinalToCamel(key) : toLower(key)] = value.trim();
-    return obj;
-  }, { method, body });
+    const header = key.includes('-') ? spinalToCamel(key) : toLower(key);
+    headers[header] = value.trim();
+    return headers;
+  }, { method });
   return result;
 };
 
-module.exports = { parseHeader };
+module.exports = { parseHeaders };
