@@ -12,7 +12,7 @@ const options = {
 };
 
 https.request(options, (res) => {
-  const datas = [];
-  res.on('data', (data) => void datas.push(data));
-  res.on('end', () => void console.log(datas.join()));
+  const chunks = [];
+  res.on('data', (data) => void chunks.push(data));
+  res.on('end', () => void console.log(chunks.join()));
 }).end();
